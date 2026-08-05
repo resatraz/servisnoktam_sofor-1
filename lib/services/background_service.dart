@@ -1,5 +1,4 @@
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 
 class BackgroundService {
   static const String channelId = 'servis_tracking_channel';
@@ -56,6 +55,6 @@ class BackgroundService {
 
   static Future<void> stopService() async {
     final service = FlutterBackgroundService();
-    await service.invoke('stopService');
+    service.invoke('stopService');
   }
 }
