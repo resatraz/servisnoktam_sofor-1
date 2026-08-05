@@ -29,7 +29,7 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ben kimim?'),
+        title: const Text('Şoför Seçimi'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(height: 1, color: AppColors.primaryLight),
