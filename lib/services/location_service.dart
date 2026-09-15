@@ -7,12 +7,15 @@ class LocationService {
   static StreamSubscription<Position>? _positionSubscription;
 
   static Future<bool> requestPermission() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return false;
     LocationPermission perm = await Geolocator.checkPermission();
     if (perm == LocationPermission.denied) {
       perm = await Geolocator.requestPermission();
     }
     if (perm == LocationPermission.deniedForever) return false;
-    return true;
+    if (perm == LocationPermission.denied) return false;
+    return perm == LocationPermission.whileInUse || perm == LocationPermission.always;
   }
 
   static void startTracking(String driverId) {
@@ -32,7 +35,8 @@ class LocationService {
   static Future<void> stopTracking(String driverId) async {
     _tracking = false;
     await _positionSubscription?.cancel();
-    await FirestoreService.updateDriverLocation(driverId, 0, 0);
+    _positionSubscription = null;
+    await FirestoreService.setDriverInactive(driverId);
   }
 
   static double calculateDistance(

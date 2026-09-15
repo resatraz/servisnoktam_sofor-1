@@ -74,4 +74,31 @@ class FirestoreService {
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
+
+  // Şoför pasif olduğunda - isActive false ile güncelle (0,0 bug fix)
+  static Future<void> setDriverInactive(String driverId) async {
+    try {
+      final docRef = _firestore.collection('drivers').doc(driverId).collection('location').doc('current');
+      final snap = await docRef.get();
+      double lastLat = 0;
+      double lastLng = 0;
+      if (snap.exists && snap.data() != null) {
+        lastLat = (snap.data()!['lat'] ?? 0).toDouble();
+        lastLng = (snap.data()!['lng'] ?? 0).toDouble();
+      }
+      await docRef.set({
+        'lat': lastLat,
+        'lng': lastLng,
+        'isActive': false,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (_) {
+      await _firestore.collection('drivers').doc(driverId).collection('location').doc('current').set({
+        'lat': 0,
+        'lng': 0,
+        'isActive': false,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
+  }
 }
